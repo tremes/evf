@@ -1,0 +1,14 @@
+bugzilla:
+  url: https://bugzilla.redhat.com/rest
+  key: "<your Bugzilla Key>"
+  params:
+    product: "OpenShift Container Platform"
+    component: "Insights Operator"
+    key: "CLOSED,VERIFIED"
+    version: "4.9"
+errata:
+  url: "https://errata.devel.redhat.com/api/v1/erratum/"
+  kerberos-conf: "/etc/krb5.conf"
+  username: "<your Kerberos username>"
+  realm: "<Kerberos Realm>"
+  password: "<your Kerberos password>"
