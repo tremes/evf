@@ -11,6 +11,19 @@ import (
 	"gopkg.in/jcmturner/gokrb5.v7/spnego"
 )
 
+type errataResponse struct {
+	Errata errata `json:"errata"`
+}
+type errata struct {
+	// these are two types (in fact the same) with different naming only
+	Rhba rhba `json:"rhba,omitempty"`
+	Rhsa rhba `json:"rhsa,omitempty"`
+}
+
+type rhba struct {
+	Synopsis string `json:"synopsis"`
+}
+
 type Handler struct {
 	url string
 	cli *spnego.Client
@@ -26,7 +39,6 @@ func New(url, krb5ConfFile, username, realm, password string) (*Handler, error) 
 	if err != nil {
 		return nil, err
 	}
-	spnego.NewClient(cl, nil, "")
 	return &Handler{
 		url: url,
 		cli: spnego.NewClient(cl, nil, ""),
@@ -50,49 +62,18 @@ func (h *Handler) getErrata(id string) ([]byte, error) {
 	return data, nil
 }
 
-func (h *Handler) GetSynopsis(id string) (string, error) {
+func (h *Handler) Synopsis(id string) (string, error) {
 	data, err := h.getErrata(id)
 	if err != nil {
 		return "", err
 	}
-	/* 	type Rhba struct {
-	   		Synopsis string `json:"synopsis"`
-	   	}
-	   	type Errata struct {
-	   		Rhba Rhba `json:"rhba"`
-	   	}
-	   	type Res struct {
-	   		Errata Errata `json:"errata"`
-	   	} */
-
-	type res struct {
-		Errata struct {
-			Rhba struct {
-				Synopsis string
-			}
-		}
-	}
-
-	type res2 struct {
-		Errata struct {
-			Rhsa struct {
-				Synopsis string
-			}
-		}
-	}
-
-	var r res
-	err = json.Unmarshal(data, &r)
+	var er errataResponse
+	err = json.Unmarshal(data, &er)
 	if err != nil {
 		return "", err
 	}
-	if r == (res{}) {
-		var r2 res2
-		err = json.Unmarshal(data, &r2)
-		if err != nil {
-			return "", err
-		}
-		return r2.Errata.Rhsa.Synopsis, nil
+	if er.Errata.Rhba.Synopsis != "" {
+		return er.Errata.Rhba.Synopsis, nil
 	}
-	return r.Errata.Rhba.Synopsis, nil
+	return er.Errata.Rhsa.Synopsis, nil
 }

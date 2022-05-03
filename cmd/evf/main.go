@@ -30,7 +30,7 @@ func main() {
 		c.Errata.Realm,
 		c.Errata.Password)
 	if err != nil {
-		fmt.Printf("Can't initiate Errata handler: %v", err)
+		fmt.Printf("Can't initiate Errata handler: %v\n", err)
 		return
 	}
 	m := make(chan errata.Errata)
@@ -38,7 +38,7 @@ func main() {
 	// iterate over errata IDs and try to find version in X.Y.Z format
 	go func() {
 		for k, _ := range errataToBZ {
-			syn, err := errataHandler.GetSynopsis(k)
+			syn, err := errataHandler.Synopsis(k)
 			if err != nil {
 				fmt.Printf("Can't read synopsis for the errata %s: %v\n", k, err)
 				continue
