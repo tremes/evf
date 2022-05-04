@@ -10,19 +10,15 @@ import (
 )
 
 func main() {
-
 	c, err := config.LoadConfig()
 	if err != nil {
-		fmt.Printf("Can't load config file:%v ", err)
+		fmt.Printf("Can't load config file:%v\n", err)
 		return
 	}
 	fmt.Printf("Searching Errata versions for the \"%s\" product in version \"%s\" and \"%s\" component\n", c.Bugzilla.Product, c.Bugzilla.Version, c.Bugzilla.Component)
-	bzHandler := bugzilla.New(c.Bugzilla.URL, c.Bugzilla.BugParams, c.Bugzilla.Key)
+	bzHandler := bugzilla.New(c.Bugzilla.URL, c.Bugzilla.SearchParams, c.Bugzilla.Key)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
-
-	//create mapping errata ID -> slice of BZ bugs
-	errataToBZ := bzHandler.BugzillaToErrata(ctx)
 
 	errataHandler, err := errata.New(c.Errata.URL,
 		c.Errata.KerberosConf,
@@ -33,6 +29,8 @@ func main() {
 		fmt.Printf("Can't initiate Errata handler: %v\n", err)
 		return
 	}
+	//create mapping errata ID -> slice of BZ bugs
+	errataToBZ := bzHandler.BugzillaToErrata(ctx)
 	m := make(chan errata.Errata)
 
 	// iterate over errata IDs and try to find version in X.Y.Z format

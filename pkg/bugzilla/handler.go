@@ -11,30 +11,41 @@ import (
 	"strings"
 )
 
+const (
+	CommentCreator = "errata-xmlrpc@redhat.com"
+)
+
+// Handler represents Bugzilla handler able to communicate
+// with the Bugzilla API
 type Handler struct {
 	url    string
-	params *BugParams
+	params *SearchParams
 	token  *string
 }
 
-func New(url string, params BugParams, token string) *Handler {
+// New creates a new instance of the `Handler` type
+func New(url string, params SearchParams, token string) *Handler {
 	return &Handler{
 		url:    url,
 		params: &params,
 		token:  &token,
 	}
 }
-func (h *Handler) getBugs(ctx context.Context, params *BugParams) (*BugsResponse, error) {
+
+// getBugs does the HTTP request to the Bugzilla API to get all the bugs
+// satisfying the provided search parameters. The response data is unmarshaled
+// to the `BugsResponse` type and returned.
+func (h *Handler) getBugs(ctx context.Context, params *SearchParams) (*BugsResponse, error) {
 	data, err := h.request(ctx, "/bug", params, nil)
 	if err != nil {
 		return nil, err
 	}
-	var res BugsResponse
-	err = json.Unmarshal(data, &res)
+	var bugsRes BugsResponse
+	err = json.Unmarshal(data, &bugsRes)
 	if err != nil {
 		return nil, err
 	}
-	return &res, nil
+	return &bugsRes, nil
 }
 
 func (h *Handler) getAllBugs(ctx context.Context) ([]Bug, error) {
@@ -62,6 +73,8 @@ func (h *Handler) getAllBugs(ctx context.Context) ([]Bug, error) {
 	return allBugs, nil
 }
 
+// BugzillaToErrata creates mapping when key is the errata ID and each errata
+// can have number of related Bugzilla bugs
 func (h *Handler) BugzillaToErrata(ctx context.Context) map[string][]Bug {
 	bugs, err := h.getAllBugs(ctx)
 	fmt.Printf("Found %d related Bugzilla bugs\n", len(bugs))
@@ -91,14 +104,14 @@ func (h *Handler) findErrataID(ctx context.Context, bzBugID int64) string {
 	if err != nil {
 		fmt.Printf("Can't get data of the bug %d: %v\n", bzBugID, err)
 	}
-	var res BugResponse
-	err = json.Unmarshal(data, &res)
+	var bugRes BugResponse
+	err = json.Unmarshal(data, &bugRes)
 	if err != nil {
 		fmt.Printf("Can't unmarshal data of the bug %d: %v\n", bzBugID, err)
 	}
-	comments := res.BugComments[bzBugID]
+	comments := bugRes.BugComments[bzBugID]
 	for _, c := range comments.Comments {
-		if c.Creator == "errata-xmlrpc@redhat.com" && strings.Contains(c.Text, "Bug report changed to RELEASE_PENDING status") {
+		if c.Creator == CommentCreator && strings.Contains(c.Text, "Bug report changed to RELEASE_PENDING status") {
 			r, err := regexp.Compile(`advisory/\d+`)
 			if err != nil {
 				fmt.Printf("Can't compile the regex pattern: %v\n", err)
@@ -111,7 +124,9 @@ func (h *Handler) findErrataID(ctx context.Context, bzBugID int64) string {
 	return ""
 }
 
-func (h *Handler) request(ctx context.Context, uri string, params *BugParams, token *string) ([]byte, error) {
+// request makes a HTTP GET request to the Bugzilla API appending the provided URI path.
+// `searchParams` and `token` parameters are optional and can be nil.
+func (h *Handler) request(ctx context.Context, uri string, params *SearchParams, token *string) ([]byte, error) {
 	url := fmt.Sprintf("%s%s", h.url, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)

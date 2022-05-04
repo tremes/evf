@@ -7,11 +7,13 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
+// Config represents all the required configuration options
+// declared in the `config.yaml` file
 type Config struct {
 	Bugzilla struct {
-		URL                string `yaml:"url"`
-		Key                string `yaml:"key"`
-		bugzilla.BugParams `yaml:"params"`
+		URL                   string `yaml:"url"`
+		Key                   string `yaml:"key"`
+		bugzilla.SearchParams `yaml:"params"`
 	}
 	Errata struct {
 		URL          string `yaml:"url"`
@@ -22,6 +24,8 @@ type Config struct {
 	}
 }
 
+// LoadConfig reads the `config.yaml` file
+// and decodes its content
 func LoadConfig() (*Config, error) {
 	configFile, err := os.Open("config.yaml")
 	if err != nil {
