@@ -3,6 +3,40 @@ evf stands for Errata verion finder and this simple tool is for finding all the 
 
 ## Configuration
 
-Configuration is defined in the `config.yaml` file in the root of this repository. This file is required and you can find an example configuration file in the `example-config.yaml`. You have to provide your Bugzilla key (to be able to communicate with the Bugzilla API) and your Kerberos settings (to be able to comunicate with the errata API).
+Configuration is defined in the `config.yaml` file in the root of this repository.**This file is required** and an example looks like the following (you can also check the `example-config.yaml`):
+
+```yaml
+bugzilla:
+  url: https://bugzilla.redhat.com/rest
+  key: "<your Bugzilla Key>"
+  params:
+    product: "OpenShift Container Platform"
+    component: "Insights Operator"
+    key: "CLOSED,VERIFIED"
+    version: "4.9"
+errata:
+  url: "https://errata.devel.redhat.com/api/v1/erratum/"
+  kerberos-conf: "/etc/krb5.conf"
+  username: "<your Kerberos username>"
+  realm: "<Kerberos Realm>"
+  password: "<your Kerberos password>"
+
+```
+
+ You have to provide your Bugzilla key (to be able to communicate with the Bugzilla API) and your Kerberos settings (to be able to comunicate with the errata API).
 
 ## How to run
+
+You can run the evf with:
+
+```bash
+make run
+```
+
+or with:
+
+```bash
+go run cmd/evf/main.go
+```
+
+The output is printed to the standard output.
