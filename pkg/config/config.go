@@ -1,20 +1,17 @@
 package config
 
 import (
-	"evf/pkg/bugzilla"
+	"evf/pkg/jira"
 	"os"
+	"syscall"
 
 	"github.com/go-yaml/yaml"
+	"golang.org/x/term"
 )
 
 // Config represents all the required configuration options
 // declared in the `config.yaml` file
 type Config struct {
-	Bugzilla struct {
-		URL                   string `yaml:"url"`
-		Key                   string `yaml:"key"`
-		bugzilla.SearchParams `yaml:"params"`
-	}
 	Errata struct {
 		URL          string `yaml:"url"`
 		KerberosConf string `yaml:"kerberos-conf"`
@@ -22,10 +19,16 @@ type Config struct {
 		Password     string `yaml:"password"`
 		Realm        string `yaml:"realm"`
 	}
+	Jira struct {
+		URL               string `yaml:"url"`
+		Token             string `yanl:"token"`
+		jira.SearchParams `yaml:"params"`
+	}
 }
 
 // LoadConfig reads the `config.yaml` file
 // and decodes its content
+// and asks user for kerberos password
 func LoadConfig() (*Config, error) {
 	configFile, err := os.Open("config.yaml")
 	if err != nil {
@@ -37,5 +40,12 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	print("Input your kerberos password.\nPassword:")
+	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		return nil, err
+	}
+	println()
+	config.Errata.Password = string(bytePassword)
 	return &config, nil
 }
