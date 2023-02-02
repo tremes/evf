@@ -19,6 +19,7 @@ type Field struct {
 }
 
 type Bug struct {
+	Key    string `json:"key"`
 	ID     string `json:"id"`
 	Fields Field  `json:"fields"`
 }

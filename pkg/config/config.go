@@ -40,12 +40,16 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	return &config, nil
+}
+
+func (config *Config) InputPassword() error {
 	print("Input your kerberos password.\nPassword:")
 	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	println()
 	config.Errata.Password = string(bytePassword)
-	return &config, nil
+	return nil
 }

@@ -15,6 +15,12 @@ func main() {
 		fmt.Printf("Can't load config file:%v\n", err)
 		return
 	}
+	err = c.InputPassword()
+	if err != nil {
+		fmt.Printf("Error inputing password:%v\n", err)
+		return
+	}
+
 	fmt.Printf("Searching Errata versions for the Jira query: %s.\n", c.Jira.SearchParams.Jql)
 
 	c.Jira.SearchParams.MaxResults = 50
@@ -63,7 +69,7 @@ func main() {
 	// print results to stdout
 	for e := range ch {
 		for _, bug := range jiraToErrata[e.ID] {
-			fmt.Printf("Bug %s: %s %s\n", bug.ID, bug.Fields.Summary, e.Synopsis)
+			fmt.Printf("%s: %s %s\n", bug.Key, bug.Fields.Summary, e.Synopsis)
 		}
 	}
 }

@@ -26,7 +26,7 @@ func (h *Handler) CreateJiraToErrataMap(ctx context.Context, bugs []Bug) map[str
 	for _, b := range bugs {
 		jiraID := h.FindErrataID(ctx, &b)
 		if jiraID == "" {
-			fmt.Printf("Didn't find the errata for the Bug %s ID\n", b.ID)
+			fmt.Printf("Didn't find the errata for the %s\n", b.Key)
 			continue
 		}
 		if bugs, ok := jiraToBz[jiraID]; ok {
@@ -45,6 +45,7 @@ func (h *Handler) FindErrataID(ctx context.Context, jiraBug *Bug) string {
 			r, err := regexp.Compile(`advisory/\d+`)
 			if err != nil {
 				fmt.Printf("Can't compile the regex pattern: %v\n", err)
+				return ""
 			}
 			subStr := r.FindString(c.Body)
 			errataID := strings.Split(subStr, "/")[1]
