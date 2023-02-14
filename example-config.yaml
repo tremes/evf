@@ -8,5 +8,5 @@ jira:
   token: "<your Jira Access Token>"
   params:
     jql: "<jql issues search query>" 
-    #Example jql for all IO OCPBUGS closed in 4.12: 
-    #project = "OCPBUGS" AND component="Insights Operator" AND status = Closed AND affectedversion = 4.12
+    # Example jql for all IO OCPBUGS closed in 4.12: 
+    # project = "OCPBUGS" AND component="Insights Operator" AND status = Closed AND affectedversion = 4.12

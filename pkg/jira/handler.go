@@ -22,21 +22,20 @@ func NewHandler(jiraClient Client) *Handler {
 }
 
 func (h *Handler) CreateJiraToErrataMap(ctx context.Context, bugs []Bug) map[string][]Bug {
-	jiraToBz := make(map[string][]Bug)
+	jiraToErrata := make(map[string][]Bug)
 	for _, b := range bugs {
 		jiraID := h.FindErrataID(ctx, &b)
 		if jiraID == "" {
 			fmt.Printf("Didn't find the errata for the %s\n", b.Key)
 			continue
 		}
-		if bugs, ok := jiraToBz[jiraID]; ok {
-			bugs = append(bugs, b)
-			jiraToBz[jiraID] = bugs
+		if bugs, ok := jiraToErrata[jiraID]; ok {
+			jiraToErrata[jiraID] = append(bugs, b)
 		} else {
-			jiraToBz[jiraID] = []Bug{b}
+			jiraToErrata[jiraID] = []Bug{b}
 		}
 	}
-	return jiraToBz
+	return jiraToErrata
 }
 
 func (h *Handler) FindErrataID(ctx context.Context, jiraBug *Bug) string {

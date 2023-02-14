@@ -20,15 +20,11 @@ type Field struct {
 
 type Bug struct {
 	Key    string `json:"key"`
-	ID     string `json:"id"`
 	Fields Field  `json:"fields"`
 }
 
 type SearchParams struct {
-	StartAt       int
-	MaxResults    int    `yaml:"maxResults"`
-	ValidateQuery bool   `yaml:"validationQuery"`
-	Fields        string `yaml:"fields"`
-	Expand        string `yaml:"expand"`
-	Jql           string `yaml:"jql"`
+	StartAt    int
+	MaxResults int    `yaml:"maxResults"`
+	Jql        string `yaml:"jql"`
 }

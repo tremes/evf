@@ -22,9 +22,6 @@ func main() {
 	}
 
 	fmt.Printf("Searching Errata versions for the Jira query: %s.\n", c.Jira.SearchParams.Jql)
-
-	c.Jira.SearchParams.MaxResults = 50
-	c.Jira.SearchParams.StartAt = 0
 	jiraClient := jira.NewClient(nil, c.Jira.URL, c.Jira.Token)
 	jiraHandler := jira.NewHandler(jiraClient)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -46,7 +43,7 @@ func main() {
 		fmt.Printf("Can't read all the bugs from the Jira API: %v\n", err)
 	}
 
-	//create mapping errata ID -> slice of Jira bugs
+	// create mapping errata ID -> slice of Jira bugs
 	jiraToErrata := jiraHandler.CreateJiraToErrataMap(ctx, jbugs)
 	ch := make(chan errata.Errata)
 	// iterate over errata IDs and try to find version in X.Y.Z format

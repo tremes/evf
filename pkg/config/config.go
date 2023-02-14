@@ -28,7 +28,6 @@ type Config struct {
 
 // LoadConfig reads the `config.yaml` file
 // and decodes its content
-// and asks user for kerberos password
 func LoadConfig() (*Config, error) {
 	configFile, err := os.Open("config.yaml")
 	if err != nil {
@@ -43,6 +42,7 @@ func LoadConfig() (*Config, error) {
 	return &config, nil
 }
 
+// InputPassword asks user to input their Kerberos password
 func (config *Config) InputPassword() error {
 	print("Input your kerberos password.\nPassword:")
 	bytePassword, err := term.ReadPassword(int(syscall.Stdin))

@@ -16,7 +16,8 @@ jira:
   token: "<your Jira Access Token>"
   params:
     jql: "<jql issues search query>"
-
+    # Example jql for all IO OCPBUGS closed in 4.12: 
+    # project = "OCPBUGS" AND component="Insights Operator" AND status = Closed AND affectedversion = 4.12
 ```
 
  You have to provide your Jira token (to be able to communicate with the Jira API) and your Kerberos settings (to be able to comunicate with the errata API).

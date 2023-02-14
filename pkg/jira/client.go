@@ -38,6 +38,8 @@ func NewClient(client *http.Client, url string, token string) Client {
 }
 
 func (c *ClientImpl) GetAllBugs(ctx context.Context, params SearchParams) ([]Bug, error) {
+	params.StartAt = 0
+	params.MaxResults = 50
 	res, err := c.getBug(ctx, params)
 	if err != nil {
 		return nil, err
@@ -74,15 +76,20 @@ func (c *ClientImpl) getBug(ctx context.Context, params SearchParams) (*bugsResp
 func (c *ClientImpl) request(ctx context.Context, uri string, params *SearchParams, token *string) ([]byte, error) {
 	url := fmt.Sprintf("%s%s", c.url, uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
-	q := req.URL.Query()
-	q.Set("jql", params.Jql)
-	q.Set("startAt", strconv.Itoa(params.StartAt))
-	q.Set("maxResults", "50")
-	q.Set("validationQuery", "true")
-	q.Set("fields", "summary, comment")
-	req.URL.RawQuery = q.Encode()
+	if params != nil {
+		q := req.URL.Query()
+		q.Set("jql", params.Jql)
+		q.Set("startAt", strconv.Itoa(params.StartAt))
+		q.Set("maxResults", strconv.Itoa(params.MaxResults))
+		q.Set("validationQuery", "true")
+		q.Set("fields", "summary, comment")
+		req.URL.RawQuery = q.Encode()
+	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", *token))
+	if token != nil {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", *token))
+	}
+
 	req.Header.Add("Accept", "application/json")
 
 	if err != nil {
@@ -95,5 +102,6 @@ func (c *ClientImpl) request(ctx context.Context, uri string, params *SearchPara
 		fmt.Println(err)
 		return nil, err
 	}
+	defer res.Body.Close()
 	return io.ReadAll(res.Body)
 }
