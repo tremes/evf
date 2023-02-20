@@ -1,5 +1,5 @@
 # evf
-evf stands for Errata verion finder and this simple tool is for finding all the Jiras for the given product, component, version and status of bugs. It scans all the comments in every bug and tries to find related errata. For every errata, it tries to find the corresponding release version of the product. This was originally implemented to find z-stream release versions of the OpenShift Container platform (for particular Bugzilla bugs).
+evf stands for Errata verion finder and this simple tool is for finding all the Jiras for the given product, component, version and status of issues. It scans all the comments in every issue and tries to find related errata. For every errata, it tries to find the corresponding release version of the product. This was originally implemented to find z-stream release versions of the OpenShift Container platform (for particular Bugzilla bugs).
 
 ## Configuration
 
