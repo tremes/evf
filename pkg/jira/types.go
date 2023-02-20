@@ -18,13 +18,12 @@ type Field struct {
 	Comments Comments `json:"comment"`
 }
 
-type Bug struct {
+type Issue struct {
 	Key    string `json:"key"`
 	Fields Field  `json:"fields"`
 }
 
 type SearchParams struct {
-	StartAt    int
-	MaxResults int    `yaml:"maxResults"`
-	Jql        string `yaml:"jql"`
+	StartAt int
+	Jql     string `yaml:"jql"`
 }

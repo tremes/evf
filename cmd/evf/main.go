@@ -37,14 +37,14 @@ func main() {
 		return
 	}
 
-	jbugs, err := jiraClient.GetAllBugs(ctx, c.Jira.SearchParams)
-	fmt.Printf("Found %d related Jira bugs\n", len(jbugs))
+	issues, err := jiraClient.GetAllIssues(ctx, c.Jira.SearchParams)
+	fmt.Printf("Found %d related Jira issues\n", len(issues))
 	if err != nil {
-		fmt.Printf("Can't read all the bugs from the Jira API: %v\n", err)
+		fmt.Printf("Can't read all the issues from the Jira API: %v\n", err)
 	}
 
-	// create mapping errata ID -> slice of Jira bugs
-	jiraToErrata := jiraHandler.CreateJiraToErrataMap(ctx, jbugs)
+	// create mapping errata ID -> slice of Jira issues
+	jiraToErrata := jiraHandler.CreateJiraToErrataMap(ctx, issues)
 	ch := make(chan errata.Errata)
 	// iterate over errata IDs and try to find version in X.Y.Z format
 	go func() {
@@ -65,8 +65,8 @@ func main() {
 
 	// print results to stdout
 	for e := range ch {
-		for _, bug := range jiraToErrata[e.ID] {
-			fmt.Printf("%s: %s %s\n", bug.Key, bug.Fields.Summary, e.Synopsis)
+		for _, issue := range jiraToErrata[e.ID] {
+			fmt.Printf("%s: %s %s\n", issue.Key, issue.Fields.Summary, e.Synopsis)
 		}
 	}
 }

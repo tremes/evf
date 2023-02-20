@@ -21,25 +21,25 @@ func NewHandler(jiraClient Client) *Handler {
 	}
 }
 
-func (h *Handler) CreateJiraToErrataMap(ctx context.Context, bugs []Bug) map[string][]Bug {
-	jiraToErrata := make(map[string][]Bug)
-	for _, b := range bugs {
-		jiraID := h.FindErrataID(ctx, &b)
-		if jiraID == "" {
-			fmt.Printf("Didn't find the errata for the %s\n", b.Key)
+func (h *Handler) CreateJiraToErrataMap(ctx context.Context, issues []Issue) map[string][]Issue {
+	errataToJira := make(map[string][]Issue)
+	for _, i := range issues {
+		errataID := h.FindErrataID(ctx, &i)
+		if errataID == "" {
+			fmt.Printf("Didn't find the errata for the %s\n", i.Key)
 			continue
 		}
-		if bugs, ok := jiraToErrata[jiraID]; ok {
-			jiraToErrata[jiraID] = append(bugs, b)
+		if issues, ok := errataToJira[errataID]; ok {
+			errataToJira[errataID] = append(issues, i)
 		} else {
-			jiraToErrata[jiraID] = []Bug{b}
+			errataToJira[errataID] = []Issue{i}
 		}
 	}
-	return jiraToErrata
+	return errataToJira
 }
 
-func (h *Handler) FindErrataID(ctx context.Context, jiraBug *Bug) string {
-	for _, c := range jiraBug.Fields.Comments.Comment {
+func (h *Handler) FindErrataID(ctx context.Context, jiraIssue *Issue) string {
+	for _, c := range jiraIssue.Fields.Comments.Comment {
 		if c.Author.EmailAddress == CommentAuthor && strings.Contains(c.Body, "This issue has been added to advisory") {
 			r, err := regexp.Compile(`advisory/\d+`)
 			if err != nil {
