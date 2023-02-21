@@ -61,7 +61,7 @@ func (c *ClientImpl) GetAllIssues(ctx context.Context, params SearchParams) ([]I
 }
 
 func (c *ClientImpl) getIssue(ctx context.Context, params SearchParams) (*issuesResponse, error) {
-	data, err := c.request(ctx, "/rest/api/2/search", &params, &c.token)
+	data, err := c.request(ctx, "/rest/api/2/search", &params)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (c *ClientImpl) getIssue(ctx context.Context, params SearchParams) (*issues
 	return &issuesRes, nil
 }
 
-func (c *ClientImpl) request(ctx context.Context, uri string, params *SearchParams, token *string) ([]byte, error) {
+func (c *ClientImpl) request(ctx context.Context, uri string, params *SearchParams) ([]byte, error) {
 	url := fmt.Sprintf("%s%s", c.url, uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if params != nil {
@@ -84,10 +84,7 @@ func (c *ClientImpl) request(ctx context.Context, uri string, params *SearchPara
 		req.URL.RawQuery = q.Encode()
 	}
 
-	if token != nil {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", *token))
-	}
-
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Add("Accept", "application/json")
 
 	if err != nil {
