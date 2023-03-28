@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// create mapping errata ID -> slice of Jira issues
-	jiraToErrata := jiraHandler.CreateJiraToErrataMap(ctx, issues)
+	jiraToErrata := jiraHandler.CreateJiraToErrataMap(issues)
 	ch := make(chan errata.Errata)
 	// iterate over errata IDs and try to find version in X.Y.Z format
 	go func() {
