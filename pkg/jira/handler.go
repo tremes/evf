@@ -23,7 +23,7 @@ func NewHandler(jiraClient Client) *Handler {
 func (h *Handler) CreateJiraToErrataMap(issues []Issue) map[string][]Issue {
 	errataToJira := make(map[string][]Issue)
 	for _, i := range issues {
-		errataID := h.FindErrataID(&i)
+		errataID := h.findErrataID(&i)
 		if errataID == "" {
 			fmt.Printf("Didn't find the errata for the %s\n", i.Key)
 			continue
@@ -33,7 +33,7 @@ func (h *Handler) CreateJiraToErrataMap(issues []Issue) map[string][]Issue {
 	return errataToJira
 }
 
-func (h *Handler) FindErrataID(jiraIssue *Issue) string {
+func (h *Handler) findErrataID(jiraIssue *Issue) string {
 	errataID := ""
 	for _, c := range jiraIssue.Fields.Comments.Comment {
 		if c.Author.EmailAddress == commentAuthor && strings.Contains(c.Body, "This issue has been added to advisory") {
