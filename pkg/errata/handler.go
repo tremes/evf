@@ -48,7 +48,7 @@ func New(url, krb5ConfFile, username, realm, password string) (*Handler, error) 
 
 func (h *Handler) getErrata(ctx context.Context, id string) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s.json", h.url, id)
-	r, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	r, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	res, err := h.cli.Do(r)
 	if err != nil {
 		return nil, err
