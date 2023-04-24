@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_getAllIssues(t *testing.T) {
+func TestGetAllIssues(t *testing.T) {
 	tests := []struct {
 		name     string
 		response issuesResponse

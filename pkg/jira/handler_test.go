@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_CreateJiraToErrataMap(t *testing.T) {
+func TestCreateJiraToErrataMap(t *testing.T) {
 	issues := []Issue{
 		{
 			Key: "1",
