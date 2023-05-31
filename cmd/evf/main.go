@@ -44,12 +44,12 @@ func main() {
 	}
 
 	// create mapping errata ID -> slice of Jira issues
-	jiraToErrata := jiraHandler.CreateJiraToErrataMap(ctx, issues)
+	jiraToErrata := jiraHandler.CreateJiraToErrataMap(issues)
 	ch := make(chan errata.Errata)
 	// iterate over errata IDs and try to find version in X.Y.Z format
 	go func() {
 		for k := range jiraToErrata {
-			syn, err := errataHandler.Synopsis(k)
+			syn, err := errataHandler.Synopsis(ctx, k)
 			if err != nil {
 				fmt.Printf("Can't read synopsis for the errata %s: %v\n", k, err)
 				continue

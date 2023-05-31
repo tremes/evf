@@ -1,14 +1,13 @@
 package jira
 
 import (
-	"context"
 	"fmt"
 	"regexp"
 	"strings"
 )
 
 const (
-	CommentAuthor = "errata-owner+e-tool@redhat.com"
+	commentAuthor = "errata-owner+e-tool@redhat.com"
 )
 
 type Handler struct {
@@ -21,10 +20,10 @@ func NewHandler(jiraClient Client) *Handler {
 	}
 }
 
-func (h *Handler) CreateJiraToErrataMap(ctx context.Context, issues []Issue) map[string][]Issue {
+func (h *Handler) CreateJiraToErrataMap(issues []Issue) map[string][]Issue {
 	errataToJira := make(map[string][]Issue)
 	for _, i := range issues {
-		errataID := h.FindErrataID(ctx, &i)
+		errataID := h.findErrataID(&i)
 		if errataID == "" {
 			fmt.Printf("Didn't find the errata for the %s\n", i.Key)
 			continue
@@ -34,10 +33,10 @@ func (h *Handler) CreateJiraToErrataMap(ctx context.Context, issues []Issue) map
 	return errataToJira
 }
 
-func (h *Handler) FindErrataID(ctx context.Context, jiraIssue *Issue) string {
+func (h *Handler) findErrataID(jiraIssue *Issue) string {
 	errataID := ""
 	for _, c := range jiraIssue.Fields.Comments.Comment {
-		if c.Author.EmailAddress == CommentAuthor && strings.Contains(c.Body, "This issue has been added to advisory") {
+		if c.Author.EmailAddress == commentAuthor && strings.Contains(c.Body, "This issue has been added to advisory") {
 			r, err := regexp.Compile(`advisory/\d+`)
 			if err != nil {
 				fmt.Printf("Can't compile the regex pattern: %v\n", err)

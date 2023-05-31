@@ -1,6 +1,7 @@
 package errata
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,10 +46,9 @@ func New(url, krb5ConfFile, username, realm, password string) (*Handler, error) 
 	}, nil
 }
 
-func (h *Handler) getErrata(id string) ([]byte, error) {
+func (h *Handler) getErrata(ctx context.Context, id string) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s.json", h.url, id)
-	//TODO use request with context
-	r, _ := http.NewRequest("GET", url, nil)
+	r, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	res, err := h.cli.Do(r)
 	if err != nil {
 		return nil, err
@@ -62,8 +62,8 @@ func (h *Handler) getErrata(id string) ([]byte, error) {
 	return data, nil
 }
 
-func (h *Handler) Synopsis(id string) (string, error) {
-	data, err := h.getErrata(id)
+func (h *Handler) Synopsis(ctx context.Context, id string) (string, error) {
+	data, err := h.getErrata(ctx, id)
 	if err != nil {
 		return "", err
 	}
